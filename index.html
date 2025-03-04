@@ -213,7 +213,7 @@
           fetchPrompt() {
             if (!this.selectedCategory || !this.selectedBusiness) return;
             axios
-              .get("https://copilotappapi.azurewebsites.net/api/Function1?", {
+              .get("https://copilotappapi.azurewebsites.net/api/SELECT?", {
                 params: {
                   Category: this.selectedCategory,
                   Task: this.selectedBusiness
