@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>シングル画面アプリ</title>
+    <!-- Vuetify CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.6.14/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        <v-main>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-select
+                  v-model="selectedCategory"
+                  :items="categories"
+                  label="カテゴリ"
+                  @change="fetchPrompt"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select
+                  v-model="selectedBusiness"
+                  :items="businesses"
+                  label="業務"
+                  @change="fetchPrompt"
+                ></v-select>
+              </v-col>
+            </v-row>
+
+            <v-textarea
+              label="プロンプト"
+              v-model="prompt"
+              rows="5"
+            ></v-textarea>
+
+            <v-btn color="primary" @click="copyToClipboard">
+              クリップボードにコピー
+            </v-btn>
+          </v-container>
+        </v-main>
+      </v-app>
+    </div>
+
+    <!-- Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- Vuetify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2/dist/vuetify.js"></script>
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+      new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        data() {
+          return {
+            categoryBusinessMap: {
+              "カテゴリA": ["業務A1", "業務A2"],
+              "カテゴリB": ["業務B1", "業務B2"]
+            },
+            categories: ["カテゴリA", "カテゴリB"],
+            businesses: [],
+            selectedCategory: null,
+            selectedBusiness: null,
+            prompt: ""
+          };
+        },
+        watch: {
+          selectedCategory(newVal) {
+            // カテゴリが変わるたびに業務リストを更新
+            this.businesses = this.categoryBusinessMap[newVal] || [];
+            this.selectedBusiness = null;
+          }
+        },
+        methods: {
+          fetchPrompt() {
+            if (!this.selectedCategory || !this.selectedBusiness) return;
+            axios
+              .get("https://example.com/api/prompt", {
+                params: {
+                  category: this.selectedCategory,
+                  business: this.selectedBusiness
+                }
+              })
+              .then((response) => {
+                this.prompt = response.data.prompt || "";
+              })
+              .catch(() => {
+                this.prompt = "取得に失敗しました";
+              });
+          },
+          copyToClipboard() {
+            navigator.clipboard
+              .writeText(this.prompt)
+              .catch(() => alert("コピーに失敗しました"));
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
