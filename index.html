@@ -220,7 +220,7 @@
                 }
               })
               .then((response) => {
-                this.prompt = response.data.prompt || "";
+                this.prompt = response.data || "";
               })
               .catch(() => {
                 this.prompt = "取得に失敗しました";
